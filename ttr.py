@@ -2,9 +2,11 @@
  ===============================================================================
  Auth: Sam Celani
  Prog: ttr.py
- Revn: 12-21-2018 Ver 1.0
+ Revn: 12-27-2018 Ver 0.4
  Func: Read in parking ticket data, print simple table, do math on (((data))),
        plot data and try to make inferences about best parking times
+
+ TODO: set up plotting
  ===============================================================================
  CHANGE LOG
  -------------------------------------------------------------------------------
@@ -20,6 +22,8 @@
                 comments
                 cls lambda function
                 update master data after changes in initStats()
+*12-27-2018:    removed editor module
+                init getStats() function
 
  IMPORTED FILES
  
@@ -30,10 +34,6 @@
 
  IMPORTED MODULES
 
-    editor
-
-        Add, Delete, or Edit ticket entries
-
     matplotlib
 
         plotting shit
@@ -41,11 +41,6 @@
     os
 
         clear screen
-
-
- TODO
-
-    set up plotting
 
 """
 
@@ -55,7 +50,6 @@
 #
 # ------------------------------------------------------------------------------
 
-from edit import editor # Contains editing menu and options
 import matplotlib       # Contains plotting functions
 import numpy            # Contains mathy stuff
 import os               # Used for clear screen
@@ -85,19 +79,27 @@ hlp = ''
 #
 #   FUNCTIONS
 #
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 """
  ===============================================================================
- Revn: 12-21-2018
+ Revn: 12-27-2018
  Func: Display plots of pertinent information
- Meth: IDK Yet
+ Meth: Just prints tickets right now
  Vars: None
  Retn: None, plots
  ===============================================================================
 """
 def getStats():
-    print('This is where the stats get computed and the plots get plotted\n')
+    #print('This is where the stats get computed and the plots get plotted\n')
+    for c in range(len(data[0])):       # Iterate over depth of tickets
+        print('[ ', end='')             # Print the start bracket
+        for b in range(len(data)):      # Iterate over all 10 attributes
+            print(data[b][c], end='')   # Print each attribute per ticket
+            # If its the last attribute, print end bracket, else comma
+            print(' ]') if b is len(data) - 1 else print(', ', end='')
+##    print('\n')                         # Finish strong with new line
+            
 
 
 """
@@ -113,21 +115,12 @@ def initStats():
     
     global data     # Grab global variable data
 
-    # Untested
-    if len(data) is 11:
-        data = []
-        for c in range(10):
-            data.append([])
-    
     with open('data/td.txt', 'r') as Tdata: # Open file as read only
         for line in Tdata:                  # Parse line by line
             l = line.split(',')             # Split over commas :) fuck C
             for c in range(len(l)):         # Iterate over items in line
                 data[c].append( l[c][:-1] ) # Strip last char, add to data set
 
-#   Debug trash
-##    for c in range(len(data)):  # Iterate over data
-##        print(data[c])          # Print all elements of each member attribute
 
 
 """
@@ -152,32 +145,22 @@ cls = lambda: os.system('cls')
 
 initStats()     # Pull data from file
 
-inp = 'What would you like to do?\n Look at stats?\n Edit entries?\n\n'
+inp = 'What would you like to do?\n Look at stats?\n Ask for help?\n\n'
 exitCondition = [ 'exit', 'stop', 'quit', 'kill', 'abort', 'close', 'terminate' ]
-changed = False
 
 while True:
     # Get user input, and sanitize
     i = input(inp).lower()
 
+    # This block kind of speaks for itself
     if i == 'stats':
         getStats()
-    elif i == 'edit':
-        cls()   # Clear screen
-        changed = editor.menu( exitCondition )
     elif i == 'help':
         print(hlp)
     elif i in exitCondition:
         break
     else:
         print('That command does not exist.\n')
-
-    # Untested
-    if changed:
-        changed = False
-        data.append([1])
-        initStats()
-
 
 ### ============================================================================
 
